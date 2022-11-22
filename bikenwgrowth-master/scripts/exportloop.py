@@ -2,7 +2,7 @@ debug = False
 
 exec(open("../parameters/parameters.py").read())
 exec(open("../code/path.py").read())
-exec(open("../code/setup.py").read())
+exec(open("../code/setupCPH.py").read())
 exec(open("../code/functions.py").read())
 
 if __name__ == '__main__':
@@ -15,7 +15,7 @@ if __name__ == '__main__':
             prune_quantiles = [0.5,1]
 
     poi_source_list = ["grid", "railwaystation"]
-    prune_measure_list = ["betweenness", "closeness", "random"]
+    prune_measure_list = ["betweenness"]
     parsets = list(itertools.product(poi_source_list, prune_measure_list))
 
     if len(sys.argv) > 2: # limit to specific parameter set

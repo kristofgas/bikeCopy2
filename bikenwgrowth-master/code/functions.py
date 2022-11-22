@@ -116,12 +116,46 @@ def simplify_ig(G):
     output.es["weight"] = output.es["length"]
     return output
 
+def simplify_ig_custom(G):
+    """Simplify an igraph with ox.simplify_graph
+    """
+    G_temp = copy.deepcopy(G)
+    G_temp.es["bc_len_attr"] = G_temp.es["weight"]
+    output = ig.Graph.from_networkx(ox.simplify_graph(nx.MultiDiGraph(G_temp.to_networkx())).to_undirected())
+    output.es["weight"] = output.es["bc_len_attr"]
+    return output
+
 
 def nxdraw(G, networktype, map_center = False, nnids = False, drawfunc = "nx.draw", nodesize = 0, weighted = False, maxwidthsquared = 0, simplified = False):
     """Take an igraph graph G and draw it with a networkx drawfunc.
     """
     if simplified:
         G.es["length"] = G.es["weight"]
+        G_nx = ox.simplify_graph(nx.MultiDiGraph(G.to_networkx())).to_undirected()
+    else:
+        G_nx = G.to_networkx()
+    if nnids is not False: # Restrict to nnids node ids
+        nnids_nx = [k for k,v in dict(G_nx.nodes(data=True)).items() if v['id'] in nnids]
+        G_nx = G_nx.subgraph(nnids_nx)
+        
+    pos_transformed, map_center = project_nxpos(G_nx, map_center)
+    if weighted is True:
+        # The max width should be the node diameter (=sqrt(nodesize))
+        widths = list(nx.get_edge_attributes(G_nx, "weight").values())
+        widthfactor = 1.1 * math.sqrt(maxwidthsquared) / max(widths)
+        widths = [max(0.33, w * widthfactor) for w in widths]
+        eval(drawfunc)(G_nx, pos_transformed, **plotparam[networktype], node_size = nodesize, width = widths)
+    elif type(weighted) is float or type(weighted) is int and weighted > 0:
+        eval(drawfunc)(G_nx, pos_transformed, **plotparam[networktype], node_size = nodesize, width = weighted)
+    else:
+        eval(drawfunc)(G_nx, pos_transformed, **plotparam[networktype], node_size = nodesize)
+    return map_center
+
+def nxdraw_custom(G, networktype, map_center = False, nnids = False, drawfunc = "nx.draw", nodesize = 0, weighted = False, maxwidthsquared = 0, simplified = False):
+    """Take an igraph graph G and draw it with a networkx drawfunc.
+    """
+    if simplified:
+        G.es["bc_len_attr"] = G.es["weight"]
         G_nx = ox.simplify_graph(nx.MultiDiGraph(G.to_networkx())).to_undirected()
     else:
         G_nx = G.to_networkx()
@@ -366,6 +400,44 @@ def csv_to_ox(p, placeid, parameterid):
         os.remove(p + prefix + '_edges.csv')
     return G
 
+def csv_to_ox_custom(p, placeid, parameterid):
+    """ Load a networkx graph from _edges.csv and _nodes.csv
+    The edge file must have attributes u,v,osmid,length
+    The node file must have attributes y,x,osmid
+    Only these attributes are loaded.
+    """
+    prefix = placeid + '_' + parameterid
+    compress = check_extract_zip(p, prefix)
+    
+    with open(p + prefix + '_edges.csv', 'r') as f:
+        header = f.readline().strip().split(",")
+
+        lines = []
+        for line in csv.reader(f, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True):
+            line_list = [c for c in line]
+            osmid = str(eval(line_list[header.index("osmid")])[0]) if isinstance(eval(line_list[header.index("osmid")]), list) else line_list[header.index("osmid")] # If this is a list due to multiedges, just load the first osmid
+            bc_len_attr = str(eval(line_list[header.index("bc_len_attr")])[0]) if isinstance(eval(line_list[header.index("bc_len_attr")]), list) else line_list[header.index("bc_len_attr")] # If this is a list due to multiedges, just load the first osmid
+            line_string = "" + line_list[header.index("u")] + " "+ line_list[header.index("v")] + " " + osmid + " " + bc_len_attr
+            lines.append(line_string)
+        G = nx.parse_edgelist(lines, nodetype = int, data = (("osmid", int),("bc_len_attr", float)), create_using = nx.MultiDiGraph) # MultiDiGraph is necessary for OSMNX, for example for get_undirected(G) in utils_graph.py
+    with open(p + prefix + '_nodes.csv', 'r') as f:
+        header = f.readline().strip().split(",")
+        values_x = {}
+        values_y = {}
+        for line in csv.reader(f, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True):
+            line_list = [c for c in line]
+            osmid = int(line_list[header.index("osmid")])
+            values_x[osmid] = float(line_list[header.index("x")])
+            values_y[osmid] = float(line_list[header.index("y")])
+
+        nx.set_node_attributes(G, values_x, "x")
+        nx.set_node_attributes(G, values_y, "y")
+
+    if compress:
+        os.remove(p + prefix + '_nodes.csv')
+        os.remove(p + prefix + '_edges.csv')
+    return G
+
 
 def csv_to_ig(p, placeid, parameterid, cleanup = True):
     """ Load an ig graph from _edges.csv and _nodes.csv
@@ -436,6 +508,9 @@ def highest_closeness_node(G):
 
 def clusterindices_by_length(clusterinfo, rev = True):
     return [k for k, v in sorted(clusterinfo.items(), key=lambda item: item[1]["length"], reverse = rev)]
+
+def clusterindices_by_length_custom(clusterinfo, rev = True):
+    return [k for k, v in sorted(clusterinfo.items(), key=lambda item: item[1]["bc_len_attr"], reverse = rev)]
 
 class MyPoint:
     def __init__(self,x,y):
@@ -565,6 +640,64 @@ def greedy_triangulation_routing_clusters(G, G_total, clusters, clusterinfo, pru
     
     return(GTs, GT_abstracts)
 
+def greedy_triangulation_routing_clusters_custom(G, G_total, clusters, clusterinfo, prune_quantiles = [1], prune_measure = "betweenness", verbose = False, full_run = False):
+    """Greedy Triangulation (GT) of a bike network G's clusters,
+    then routing on the graph G_total that includes car infra to connect the GT.
+    G and G_total are ipgraph graphs
+    
+    The GT connects pairs of clusters in ascending order of their distance provided
+    that no edge crossing is introduced. It leads to a maximal connected planar
+    graph, while minimizing the total length of edges considered. 
+    See: cardillo2006spp
+    
+    Distance here is routing distance, while edge crossing is checked on an abstract 
+    level.
+    """
+    
+    if len(clusters) < 2: return ([], []) # We can't do anything with less than 2 clusters
+
+    centroid_indices = [v["centroid_index"] for k, v in sorted(clusterinfo.items(), key=lambda item: item[1]["size"], reverse = True)]
+    G_temp = copy.deepcopy(G_total)
+    for e in G_temp.es: # delete all edges
+        G_temp.es.delete(e)
+    
+    clusterpairs = clusterpairs_by_distance_custom(G, G_total, clusters, clusterinfo, True, verbose, full_run)
+    if len(clusterpairs) == 0: return ([], [])
+    
+    centroidpairs = [((clusterinfo[c[0][0]]['centroid_id'], clusterinfo[c[0][1]]['centroid_id']), c[2]) for c in clusterpairs]
+    
+    GT_abstracts = []
+    GTs = []
+    for prune_quantile in prune_quantiles:
+        GT_abstract = copy.deepcopy(G_temp.subgraph(centroid_indices))
+        GT_abstract = greedy_triangulation(GT_abstract, centroidpairs, prune_quantile, prune_measure)
+        GT_abstracts.append(GT_abstract)
+
+        centroidids_closestnodeids = {} # dict for retrieveing quickly closest node ids pairs from centroidid pairs
+        for x in clusterpairs:
+            centroidids_closestnodeids[(clusterinfo[x[0][0]]["centroid_id"], clusterinfo[x[0][1]]["centroid_id"])] = (x[1][0], x[1][1])
+            centroidids_closestnodeids[(clusterinfo[x[0][1]]["centroid_id"], clusterinfo[x[0][0]]["centroid_id"])] = (x[1][1], x[1][0]) # also add switched version as we do not care about order
+
+        # Get node pairs we need to route, sorted by distance
+        routenodepairs = []
+        for e in GT_abstract.es:
+            # get the centroid-ids from closestnode-ids
+            routenodepairs.append([centroidids_closestnodeids[(e.source_vertex["id"], e.target_vertex["id"])], e["weight"]])
+
+        routenodepairs.sort(key=lambda x: x[1])
+
+        # Do the routing, on G_total
+        GT_indices = set()
+        for poipair, poipair_distance in routenodepairs:
+            poipair_ind = (G_total.vs.find(id = poipair[0]).index, G_total.vs.find(id = poipair[1]).index)
+            sp = set(G_total.get_shortest_paths(poipair_ind[0], poipair_ind[1], weights = "weight", output = "vpath")[0])
+            GT_indices = GT_indices.union(sp)
+
+        GT = G_total.induced_subgraph(GT_indices)
+        GTs.append(GT)
+    
+    return(GTs, GT_abstracts)
+
 
 def clusterpairs_by_distance(G, G_total, clusters, clusterinfo, return_distances = False, verbose = False, full_run = False):
     """Calculates the (weighted) graph distances on G for a number of clusters.
@@ -576,6 +709,88 @@ def clusterpairs_by_distance(G, G_total, clusters, clusterinfo, return_distances
     """
     
     cluster_indices = clusterindices_by_length(clusterinfo, False) # Start with the smallest so the for loop is as short as possible
+    clusterpairs = []
+    clustercopies = {}
+    
+    # Create copies of all clusters
+    for i in range(len(cluster_indices)):
+        clustercopies[i] = clusters[i].copy()
+        
+    # Take one cluster
+    for i, c1 in enumerate(cluster_indices[:-1]):
+        c1_indices = G_total.vs.select(lambda x: x["id"] in clustercopies[c1].vs()["id"]).indices
+        print("Working on cluster " + str(i+1) + " of " + str(len(cluster_indices)) + "...")
+        for j, c2 in enumerate(cluster_indices[i+1:]):
+            closest_pair = {'i': -1, 'j': -1}
+            min_dist = np.inf
+            c2_indices = G_total.vs.select(lambda x: x["id"] in clustercopies[c2].vs()["id"]).indices
+            if verbose: print("... routing " + str(len(c1_indices)) + " nodes to " + str(len(c2_indices)) + " nodes in other cluster " + str(j+1) + " of " + str(len(cluster_indices[i+1:])) + ".")
+            
+            if full_run:
+                # Compare all pairs of nodes in both clusters (takes long)
+                for a in list(c1_indices):
+                    sp = G_total.get_shortest_paths(a, c2_indices, weights = "weight", output = "epath")
+
+                    if all([not elem for elem in sp]):
+                        # If there is no path from one node, there is no path from any node
+                        break
+                    else:
+                        for path, c2_index in zip(sp, c2_indices):
+                            if len(path) >= 1:
+                                dist_nodes = sum([G_total.es[e]['weight'] for e in path])
+                                if dist_nodes < min_dist:
+                                    closest_pair['i'] = G_total.vs[a]["id"]
+                                    closest_pair['j'] = G_total.vs[c2_index]["id"]
+                                    min_dist = dist_nodes
+            else:
+                # Do a heuristic that should be close enough.
+                # From cluster 1, look at all shortest paths only from its centroid
+                a = clusterinfo[c1]["centroid_index"]
+                sp = G_total.get_shortest_paths(a, c2_indices, weights = "weight", output = "epath")
+                if all([not elem for elem in sp]):
+                    # If there is no path from one node, there is no path from any node
+                    break
+                else:
+                    for path, c2_index in zip(sp, c2_indices):
+                        if len(path) >= 1:
+                            dist_nodes = sum([G_total.es[e]['weight'] for e in path])
+                            if dist_nodes < min_dist:
+                                closest_pair['j'] = G_total.vs[c2_index]["id"]
+                                min_dist = dist_nodes
+                # Closest c2 node to centroid1 found. Now find all c1 nodes to that closest c2 node.
+                b = G_total.vs.find(id = closest_pair['j']).index
+                sp = G_total.get_shortest_paths(b, c1_indices, weights = "weight", output = "epath")
+                if all([not elem for elem in sp]):
+                    # If there is no path from one node, there is no path from any node
+                    break
+                else:
+                    for path, c1_index in zip(sp, c1_indices):
+                        if len(path) >= 1:
+                            dist_nodes = sum([G_total.es[e]['weight'] for e in path])
+                            if dist_nodes <= min_dist: # <=, not <!
+                                closest_pair['i'] = G_total.vs[c1_index]["id"]
+                                min_dist = dist_nodes
+            
+            if closest_pair['i'] != -1 and closest_pair['j'] != -1:
+                clusterpairs.append([(c1, c2), (closest_pair['i'], closest_pair['j']), min_dist])
+                                    
+    clusterpairs.sort(key = lambda x: x[-1])
+    if return_distances:
+        return clusterpairs
+    else:
+        return [[o[0], o[1]] for o in clusterpairs]
+
+
+def clusterpairs_by_distance_custom(G, G_total, clusters, clusterinfo, return_distances = False, verbose = False, full_run = False):
+    """Calculates the (weighted) graph distances on G for a number of clusters.
+    Returns all pairs of cluster ids and closest nodes in ascending order of their distance. 
+    If return_distances, then distances are also returned.
+
+    Returns a list containing these elements, sorted by distance:
+    [(clusterid1, clusterid2), (closestnodeid1, closestnodeid2), distance]
+    """
+    
+    cluster_indices = clusterindices_by_length_custom(clusterinfo, False) # Start with the smallest so the for loop is as short as possible
     clusterpairs = []
     clustercopies = {}
     
@@ -1166,6 +1381,120 @@ def calculate_metrics(G, GT_abstract, G_big, nnids, calcmetrics = {"length":0,
     else:
         return output
 
+def calculate_metrics_custom(G, GT_abstract, G_big, nnids, calcmetrics = {"bc_len_attr":0,
+          "bc_len_attr_lcc":0,
+          "coverage": 0,
+          "directness": 0,
+          "directness_lcc": 0,
+          "poi_coverage": 0,
+          "components": 0,
+          "overlap_biketrack": 0,
+          "overlap_bikeable": 0,
+          "efficiency_global": 0,
+          "efficiency_local": 0,
+          "directness_lcc_linkwise": 0,
+          "directness_all_linkwise": 0
+         }, buffer_walk = 500, numnodepairs = 500, verbose = False, return_cov = True, G_prev = ig.Graph(), cov_prev = Polygon(), ignore_GT_abstract = False, Gexisting = {}):
+    """Calculates all metrics (using the keys from calcmetrics).
+    """
+    
+    output = {}
+    for key in calcmetrics:
+        output[key] = 0
+    cov = Polygon()
+
+    # Check that the graph has links (sometimes we have an isolated node)
+    if G.ecount() > 0 and GT_abstract.ecount() > 0:
+
+        # Get LCC
+        cl = G.clusters()
+        LCC = cl.giant()
+
+        # EFFICIENCY
+        if not ignore_GT_abstract:
+            if verbose and ("efficiency_global" in calcmetrics or "efficiency_local" in calcmetrics): print("Calculating efficiency...")
+            if "efficiency_global" in calcmetrics:
+                output["efficiency_global"] = calculate_efficiency_global(GT_abstract, numnodepairs)
+            if "efficiency_local" in calcmetrics:
+                output["efficiency_local"] = calculate_efficiency_local(GT_abstract, numnodepairs) 
+        
+        # EFFICIENCY ROUTED
+        if verbose and ("efficiency_global_routed" in calcmetrics or "efficiency_local_routed" in calcmetrics): print("Calculating efficiency (routed)...")
+        if "efficiency_global_routed" in calcmetrics:
+            try:
+                output["efficiency_global_routed"] = calculate_efficiency_global(simplify_ig_custom(G), numnodepairs)
+            except:
+                print("Problem with efficiency_global_routed.") # This try is needed for some pathological cases, for example loops generating empty graphs (only happened in Zurich, railwaystation/closeness)
+                pass
+        if "efficiency_local_routed" in calcmetrics:
+            try:
+                output["efficiency_local_routed"] = calculate_efficiency_local(simplify_ig_custom(G), numnodepairs)
+            except:
+                print("Problem with efficiency_local_routed.") # This try is needed for some pathological cases, for example loops generating empty graphs (only happened in Zurich, railwaystation/closeness)
+                pass
+
+        # bc_len_attr
+        if verbose and ("bc_len_attr" in calcmetrics or "bc_len_attr_lcc" in calcmetrics): print("Calculating bc_len_attr...")
+        if "bc_len_attr" in calcmetrics:
+            output["bc_len_attr"] = sum([e['weight'] for e in G.es])
+        if "bc_len_attr_lcc" in calcmetrics:
+            if len(cl) > 1:
+                output["bc_len_attr_lcc"] = sum([e['weight'] for e in LCC.es])
+            else:
+                output["bc_len_attr_lcc"] = output["bc_len_attr"]
+        
+        # COVERAGE
+        if "coverage" in calcmetrics:
+            if verbose: print("Calculating coverage...")
+            # G_added = G.difference(G_prev) # This doesnt work
+            covered_area, cov = calculate_coverage_edges(G, buffer_walk, return_cov, G_prev, cov_prev)
+            output["coverage"] = covered_area
+            # OVERLAP WITH EXISTING NETS
+            if Gexisting:
+                if "overlap_biketrack" in calcmetrics:
+                    output["overlap_biketrack"] = edge_lengths(intersect_igraphs(Gexisting["biketrack"], G))
+                if "overlap_bikeable" in calcmetrics:
+                    output["overlap_bikeable"] = edge_lengths(intersect_igraphs(Gexisting["bikeable"], G))
+
+        # POI COVERAGE
+        if "poi_coverage" in calcmetrics:
+            if verbose: print("Calculating POI coverage...")
+            output["poi_coverage"] = calculate_poiscovered(G_big, cov, nnids)
+
+        # COMPONENTS
+        if "components" in calcmetrics:
+            if verbose: print("Calculating components...")
+            output["components"] = len(list(G.components()))
+        
+        # DIRECTNESS
+        if verbose and ("directness" in calcmetrics or "directness_lcc" in calcmetrics): print("Calculating directness...")
+        if "directness" in calcmetrics:
+            output["directness"] = calculate_directness(G, numnodepairs)
+        if "directness_lcc" in calcmetrics:
+            if len(cl) > 1:
+                output["directness_lcc"] = calculate_directness(LCC, numnodepairs)
+            else:
+                output["directness_lcc"] = output["directness"]
+
+        # DIRECTNESS LINKWISE
+        if verbose and ("directness_lcc_linkwise" in calcmetrics): print("Calculating directness linkwise...")
+        if "directness_lcc_linkwise" in calcmetrics:
+            if len(cl) > 1:
+                output["directness_lcc_linkwise"] = calculate_directness_linkwise(LCC, numnodepairs)
+            else:
+                output["directness_lcc_linkwise"] = calculate_directness_linkwise(G, numnodepairs)
+        if verbose and ("directness_all_linkwise" in calcmetrics): print("Calculating directness linkwise (all components)...")
+        if "directness_all_linkwise" in calcmetrics:
+            if "directness_lcc_linkwise" in calcmetrics and len(cl) <= 1:
+                output["directness_all_linkwise"] = output["directness_lcc_linkwise"]
+            else: # we have >1 components
+                output["directness_all_linkwise"] = calculate_directness_linkwise(G, numnodepairs) # number of components is checked within calculate_directness_linkwise()
+
+    if return_cov: 
+        return (output, cov)
+    else:
+        return output
+
 
 def overlap_linepoly(l, p):
     """Calculates the length of shapely LineString l falling inside the shapely Polygon p
@@ -1259,6 +1588,93 @@ def calculate_metrics_additively(Gs, GT_abstracts, prune_quantiles, G_big, nnids
     for GT, GT_abstract, prune_quantile in zip(Gs, GT_abstracts, tqdm(prune_quantiles, desc = "Bicycle networks", leave = False)):
         if verbose: print("Calculating bike network metrics for quantile " + str(prune_quantile))
         metrics, cov = calculate_metrics(GT, GT_abstract, G_big, nnids, output, buffer_walk, numnodepairs, verbose, return_cov, GT_prev, cov_prev, False, Gexisting)
+        
+        for key in output.keys():
+            output[key].append(metrics[key])
+        covs[prune_quantile] = cov
+        cov_prev = copy.deepcopy(cov)
+        GT_prev = copy.deepcopy(GT)
+
+
+    # # CAR CONSTRICTED BICYCLE NETWORKS (takes too long - commented out for now)
+    # # These are the car networks where the length of the bike subnetwork is increased 10 times, effectively implementing a speed reduction from 50 km/h to 5 km/h. We are only interested in directness, as all other metrics do not change or are already calculated elsewhere.
+    # output_carconstrictedbike = {
+    #           "directness": [],
+    #           "directness_lcc": []
+    #          }
+    # for GT, GT_abstract, prune_quantile in zip(Gs, GT_abstracts, tqdm(prune_quantiles, desc = "Car constricted bicycle networks", leave = False)):
+    #     GT_carconstrictedbike = copy.deepcopy(G_big)
+    #     constrict_overlaps(GT_carconstrictedbike, GT)
+    #     if verbose: print("Calculating carconstrictedbike network metrics for quantile " + str(prune_quantile))
+    #     metrics = calculate_metrics(GT_carconstrictedbike, GT_abstract, G_big, nnids, output_carconstrictedbike, buffer_walk, numnodepairs, verbose, False)
+        
+    #     for key in output_carconstrictedbike.keys():
+    #         output_carconstrictedbike[key].append(metrics[key])
+
+
+    # # CAR MINUS BICYCLE NETWORKS
+    # # These are the car networks where the links from the bike subnetworks are completely removed. Here we follow a reverse order to build up the costly cover calculations additively.
+    # # First construct the negative networks
+    # GT_carminusbikes = []
+    # for GT, prune_quantile in zip(reversed(Gs), reversed(prune_quantiles)):
+    #     GT_carminusbike = copy.deepcopy(G_big)
+    #     delete_overlaps(GT_carminusbike, GT)
+    #     GT_carminusbikes.append(GT_carminusbike)
+    #     # print((GT_carminusbike.ecount() + GT.ecount()), GT_carminusbike.ecount(), GT.ecount()) # sanity check
+
+    # output_carminusbike = {
+    #         "length":[],
+    #         "length_lcc":[],
+    #         "coverage": [],
+    #         "directness": [],
+    #         "directness_lcc": [],
+    #         "poi_coverage": [],
+    #         "components": []
+    #         }
+    # covs_carminusbike = {}
+    # cov_prev = Polygon()
+    # GT_prev = ig.Graph()
+    # for GT, prune_quantile in zip(GT_carminusbikes, tqdm(reversed(prune_quantiles), desc = "Car minus bicycle networks", leave = False)):
+    #     if verbose: print("Calculating carminusbike network metrics for quantile " + str(prune_quantile))
+    #     metrics, cov = calculate_metrics(GT, GT, G_big, nnids, output_carminusbike, buffer_walk, numnodepairs, verbose, return_cov, GT_prev, cov_prev, True)
+        
+    #     for key in output_carminusbike.keys():
+    #         output_carminusbike[key].insert(0, metrics[key]) # append to beginning due to reversed order
+    #     covs_carminusbike[prune_quantile] = cov
+    #     cov_prev = copy.deepcopy(cov)
+    #     GT_prev = copy.deepcopy(GT)
+
+    # return (output, covs, output_carminusbike, covs_carminusbike, output_carconstrictedbike)
+    return (output, covs)
+
+def calculate_metrics_additively_custom(Gs, GT_abstracts, prune_quantiles, G_big, nnids, buffer_walk = 500, numnodepairs = 500, verbose = False, return_cov = True, Gexisting = {}, output = {
+            "bc_len_attr":[],
+            "bc_len_attr_lcc":[],
+            "coverage": [],
+            "directness": [],
+            "directness_lcc": [],
+            "poi_coverage": [],
+            "components": [],
+            "overlap_biketrack": [],
+            "overlap_bikeable": [],
+            "efficiency_global": [],
+            "efficiency_local": [],
+            "efficiency_global_routed": [],
+            "efficiency_local_routed": [],
+            "directness_lcc_linkwise": [],
+            "directness_all_linkwise": []        
+            }):
+    """Calculates all metrics, additively. 
+    Coverage differences are calculated in every step instead of the whole coverage.
+    """
+
+    # BICYCLE NETWORKS
+    covs = {} # covers using buffer_walk
+    cov_prev = Polygon()
+    GT_prev = ig.Graph()
+    for GT, GT_abstract, prune_quantile in zip(Gs, GT_abstracts, tqdm(prune_quantiles, desc = "Bicycle networks", leave = False)):
+        if verbose: print("Calculating bike network metrics for quantile " + str(prune_quantile))
+        metrics, cov = calculate_metrics_custom(GT, GT_abstract, G_big, nnids, output, buffer_walk, numnodepairs, verbose, return_cov, GT_prev, cov_prev, False, Gexisting)
         
         for key in output.keys():
             output[key].append(metrics[key])

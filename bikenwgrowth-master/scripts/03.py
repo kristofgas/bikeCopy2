@@ -1,8 +1,9 @@
-for placeid, placeinfo in cities.items():
+for placeid, placeinfo in tqdm(cities.items(), desc="Cities"):
     print(placeid + ": Generating networks")
 
     # Load networks
-    G_carall = csv_to_ig(PATH["data"] + placeid + "/", placeid, 'carall')
+    #G_carall = csv_to_ig(PATH["data"] + placeid + "/", placeid, 'carall')
+    G_carall = csv_to_ig_custom(PATH["data"] + placeid + "/", placeid, 'carall')
     
     # Load POIs
     with open(PATH["data"] + placeid + "/" + placeid + '_poi_' + poi_source + '_nnidscarall.csv') as f:
