@@ -283,7 +283,7 @@ def osm_to_ig(node, edge):
     G.simplify(combine_edges=max)
     return G
 
-def osm_to_ig_custom(node, edge):
+def osm_to_ig_custom(node, edge, attrr):
     """ Turns a node and edge dataframe into an igraph Graph.
     """
     
@@ -307,7 +307,7 @@ def osm_to_ig_custom(node, edge):
     edge_info["osmid"] = []
     for i in range(len(edge)):
         edge_list.append([id_dict.get(edge['u'][i]), id_dict.get(edge['v'][i])])
-        edge_info["weight"].append(round(edge['bc_len_attr'][i], 10))
+        edge_info["weight"].append(round(edge[attrr][i], 10))
         edge_info["osmid"].append(edge['osmid'][i])
 
     G.add_edges(edge_list) # attributes = edge_info doesn't work although it should: https://igraph.org/python/doc/igraph.Graph-class.html#add_edges
@@ -463,7 +463,7 @@ def csv_to_ig(p, placeid, parameterid, cleanup = True):
     mirror_y(G)
     return G
 
-def csv_to_ig_custom(p, placeid, parameterid, cleanup = True):
+def csv_to_ig_custom(p, placeid, parameterid, attr, cleanup = True):
     """ Load an ig graph from _edges.csv and _nodes.csv
     The edge file must have attributes u,v,osmid,length
     The node file must have attributes y,x,osmid
@@ -482,7 +482,7 @@ def csv_to_ig_custom(p, placeid, parameterid, cleanup = True):
         os.remove(p + prefix + '_edges.csv')
     if empty:
         return ig.Graph(directed = False)
-    G = osm_to_ig_custom(n, e)
+    G = osm_to_ig_custom(n, e, attrr)
     round_coordinates(G)
     mirror_y(G)
     return G
