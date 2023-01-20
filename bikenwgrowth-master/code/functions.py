@@ -1,5 +1,49 @@
+def normalise_edge_dict(dictionary):
+    x = pd.DataFrame.from_dict([dictionary]).T # convert dict to dataframe and transpose
+    min_max_scaler = preprocessing.MinMaxScaler(feature_range=(0.1, 1.0)) #custom range
+    x_scaled = min_max_scaler.fit_transform(x)
+    x_scaled = [item for sublist in x_scaled for item in sublist] #flatten
+
+    #update dictionary
+    i=-1
+    for k, v in dictionary.items():
+        i+=1
+        dictionary[k] = x_scaled[i]
+        
+    return dictionary
+
+def normalise_graph_attr(G, attr):
+    e_dict = len_dict = nx.get_edge_attributes(G, attr) 
+    normalise_edge_dict(e_dict)
+    e_dict_list = list(e_dict.values())
+    
+    i=-1
+    for e in G.edges():
+        i+=1
+        a,b = e
+        nx.set_edge_attributes(G, {(a,b,0): {attr: e_dict_list[i] }})
+
 
 # GRAPH PLOTTING
+
+def dict_to_histogram(dictionary, attr_descrip):
+    x1 = pd.Series(dictionary)
+
+    kwargs = dict(alpha=0.5, bins=100)
+
+    plt.hist(x1, **kwargs, color='g')
+    plt.gca().set(title='Frequency Histogram of '+ attr_descrip, ylabel='Frequency')
+    plt.xlim(min(dictionary.values()),max(dictionary.values()))
+    plt.legend();
+
+def df_to_histogram(df, attr_descrip):
+ 
+    kwargs = dict(alpha=0.5, bins=100)
+
+    plt.hist(df, **kwargs, color='g')
+    plt.gca().set(title='Frequency Histogram of '+ attr_descrip, ylabel='Frequency')
+    plt.xlim(min(df),max(df))
+    plt.legend();
 
 def holepatchlist_from_cov(cov, map_center):
     """Get a patchlist of holes (= shapely interiors) from a coverage Polygon or MultiPolygon
@@ -463,7 +507,7 @@ def csv_to_ig(p, placeid, parameterid, cleanup = True):
     mirror_y(G)
     return G
 
-def csv_to_ig_custom(p, placeid, parameterid, attr, cleanup = True):
+def csv_to_ig_custom(p, placeid, parameterid, attrr, cleanup = True):
     """ Load an ig graph from _edges.csv and _nodes.csv
     The edge file must have attributes u,v,osmid,length
     The node file must have attributes y,x,osmid
@@ -1800,6 +1844,38 @@ def write_result(res, mode, placeid, poi_source, prune_measure, suffix, dictnest
                 row.update(val)
                 w.writerow(row)
 
+def write_result2(res, mode, placeid, poi_source, prune_measure, suffix, dictnested = {}):
+    """Write results (pickle or dict to csv)
+    """
+    if mode == "pickle":
+        openmode = "wb"
+    else:
+        openmode = "w"
+
+    if poi_source:
+        filename = placeid + '_poi_' + poi_source + "_" + prune_measure + suffix
+    else:
+        filename = placeid + "_" + prune_measure + suffix
+
+    with open(PATH["results"] + placeid + "/" + filename, openmode) as f:
+        if mode == "pickle":
+            pickle.dump(res, f)
+        elif mode == "dict":
+            w = csv.writer(f)
+            w.writerow(res.keys())
+            try: # dict with list values
+                w.writerows(zip(*res.values()))
+            except: # dict with single values
+                w.writerow(res.values())
+        elif mode == "dictnested":
+            # https://stackoverflow.com/questions/29400631/python-writing-nested-dictionary-to-csv
+            fields = ['network'] + list(dictnested.keys())
+            w = csv.DictWriter(f, fields)
+            w.writeheader()
+            for key, val in sorted(res.items()):
+                row = {'network': key}
+                row.update(val)
+                w.writerow(row)
 
 def gdf_to_geojson(gdf, properties):
     """Turn a gdf file into a GeoJSON.

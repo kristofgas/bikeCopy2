@@ -19,6 +19,7 @@ import shutil
 import math
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing
 
 # Network
 import igraph as ig

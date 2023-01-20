@@ -21,13 +21,14 @@ prune_measures = {"betweenness": "Bq"}
 
 
 
-#networktypes = ["biketrack", "carall", "bikeable", "biketrackcarall", "biketrack_onstreet", "bikeable_offstreet"] # Existing infrastructures to analyze
-networktypes = ["carall"] # Existing infrastructures to analyze
+networktypes = ["biketrack", "carall", "bikeable", "biketrackcarall", "biketrack_onstreet", "bikeable_offstreet"] # Existing infrastructures to analyze
+#networktypes = ["carall"] # Existing infrastructures to analyze
 
+networktypesdata = ["biketrack","bikeable", "biketrackcarall"]
 
+attrlist = ['length_attr','bcount_attr','pop_den_attr','bcount_pop_den_attr']
 
-
-
+#attrlist = ['length']
 
 
 # 02
