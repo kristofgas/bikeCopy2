@@ -87,3 +87,4 @@
 2023-01-20 12:16:59,711 INFO osmnx Created nodes GeoDataFrame from graph
 2023-01-20 12:17:00,616 INFO osmnx Created edges GeoDataFrame from graph
 2023-01-20 12:17:11,193 INFO osmnx Saved graph as GraphML file at "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-21 02:53:13,661 INFO osmnx Created edges GeoDataFrame from graph

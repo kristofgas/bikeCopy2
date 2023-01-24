@@ -23,6 +23,11 @@ for placeid, placeinfo in tqdm(cities.items(), desc = "Cities"):
     G_caralls_simplified[placeid].graph["crs"] = 'epsg:4326' # needed for OSMNX's graph_to_gdfs in utils_graph.py
 
 
+# ### Railway stations/halts and bus stops
+
+# In[5]:
+
+
 # Here POIs are downloaded and matched to the network. To ensure consistency, we should download POIs only once, then load them locally. For now we leave it as is, as POIs are not expected to change fast.
 
 for placeid, placeinfo in tqdm(cities.items(), desc = "Cities"):
@@ -54,10 +59,18 @@ for placeid, placeinfo in tqdm(cities.items(), desc = "Cities"):
         if debug: gdf.plot(color = 'red')
 
 
+# ### Grid
+
+# Using code from: https://github.com/gboeing/osmnx-examples/blob/v0.11/notebooks/17-street-network-orientations.ipynb
+
+# In[6]:
+
+
 for placeid, placeinfo in tqdm(cities.items(), desc  = "Cities"):
     print(placeid + ": Creating grid")
     
     location = locations[placeid]
+    
     
     
     # FIRST, determine the most common bearing, for the best grid orientation

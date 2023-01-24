@@ -37,5 +37,5 @@ if __name__ == '__main__':
         print("Running 04.py")
         exec(open("04.py").read())
 
-        print("Running 05.py")
-        exec(open("05.py").read())
+        #print("Running 05.py")
+        #exec(open("05.py").read())

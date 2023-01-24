@@ -43,7 +43,7 @@ poiparameters = {"railwaystation":{'railway':['station','halt']}#, # should mayb
 
 # 04
 buffer_walk = 500 # Buffer in m for coverage calculations. (How far people are willing to walk)
-numnodepairs = 500 # Number of node pairs to consider for random sample to calculate directness (O(numnodepairs^2), so better not go over 1000)
+numnodepairs = 50 # Number of node pairs to consider for random sample to calculate directness (O(numnodepairs^2), so better not go over 1000)
 
 #05
 nodesize_grown = 7.5
