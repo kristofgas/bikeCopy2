@@ -1,0 +1,90 @@
+2023-01-06 19:09:44,478 INFO osmnx Configured OSMnx
+2023-01-06 19:09:49,979 INFO osmnx Converting node and edge attribute data types
+2023-01-06 19:09:50,721 INFO osmnx Loaded graph with 35509 nodes and 65582 edges from "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-06 19:22:51,519 INFO osmnx Configured OSMnx
+2023-01-06 19:22:56,119 INFO osmnx Converting node and edge attribute data types
+2023-01-06 19:22:56,868 INFO osmnx Loaded graph with 35509 nodes and 65582 edges from "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-06 19:22:57,897 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-06 19:23:03,486 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-06 19:23:06,197 INFO osmnx Begin topologically simplifying the graph...
+2023-01-06 19:23:07,113 INFO osmnx Identified 7804 edge endpoints
+2023-01-06 19:23:09,531 INFO osmnx Simplified graph: 35509 to 7804 nodes, 65582 to 19539 edges
+2023-01-06 19:23:09,754 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-06 19:23:10,808 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-06 19:23:20,265 INFO osmnx Saved graph as GraphML file at "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-06 19:32:55,115 INFO osmnx Configured OSMnx
+2023-01-06 19:33:02,725 INFO osmnx Converting node and edge attribute data types
+2023-01-06 19:33:03,719 INFO osmnx Loaded graph with 35509 nodes and 65582 edges from "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-06 19:33:07,590 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-06 19:33:13,446 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-06 19:33:16,233 INFO osmnx Begin topologically simplifying the graph...
+2023-01-06 19:33:17,074 INFO osmnx Identified 7804 edge endpoints
+2023-01-06 19:33:19,602 INFO osmnx Simplified graph: 35509 to 7804 nodes, 65582 to 19539 edges
+2023-01-06 19:33:19,833 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-06 19:33:20,925 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-06 19:33:30,643 INFO osmnx Saved graph as GraphML file at "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-06 19:34:55,863 INFO osmnx Configured OSMnx
+2023-01-06 19:35:03,352 INFO osmnx Converting node and edge attribute data types
+2023-01-06 19:35:04,198 INFO osmnx Loaded graph with 35509 nodes and 65582 edges from "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-06 19:35:05,608 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-06 19:35:11,271 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-06 19:35:13,975 INFO osmnx Begin topologically simplifying the graph...
+2023-01-06 19:35:14,757 INFO osmnx Identified 7804 edge endpoints
+2023-01-06 19:35:17,360 INFO osmnx Simplified graph: 35509 to 7804 nodes, 65582 to 19539 edges
+2023-01-06 19:35:17,579 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-06 19:35:18,625 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-06 19:35:27,928 INFO osmnx Saved graph as GraphML file at "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-06 19:37:17,215 INFO osmnx Configured OSMnx
+2023-01-06 19:37:25,716 INFO osmnx Converting node and edge attribute data types
+2023-01-06 19:37:26,535 INFO osmnx Loaded graph with 35509 nodes and 65582 edges from "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-06 19:45:45,533 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-06 19:45:50,964 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-06 19:45:53,621 INFO osmnx Begin topologically simplifying the graph...
+2023-01-06 19:45:54,433 INFO osmnx Identified 7804 edge endpoints
+2023-01-06 19:45:57,071 INFO osmnx Simplified graph: 35509 to 7804 nodes, 65582 to 19539 edges
+2023-01-06 19:45:57,296 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-06 19:45:58,192 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-06 19:46:07,683 INFO osmnx Saved graph as GraphML file at "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-07 01:32:38,837 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-20 12:11:05,890 INFO osmnx Configured OSMnx
+2023-01-20 12:11:21,242 INFO osmnx Converting node and edge attribute data types
+2023-01-20 12:11:22,109 INFO osmnx Loaded graph with 35602 nodes and 65752 edges from "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-20 12:11:43,851 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-20 12:11:49,705 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-20 12:11:52,691 INFO osmnx Begin topologically simplifying the graph...
+2023-01-20 12:11:53,412 INFO osmnx Identified 7813 edge endpoints
+2023-01-20 12:11:56,306 INFO osmnx Simplified graph: 35602 to 7813 nodes, 65752 to 19559 edges
+2023-01-20 12:11:56,539 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-20 12:11:57,449 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-20 12:12:08,248 INFO osmnx Saved graph as GraphML file at "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-20 12:13:30,099 INFO osmnx Configured OSMnx
+2023-01-20 12:13:37,175 INFO osmnx Converting node and edge attribute data types
+2023-01-20 12:13:38,037 INFO osmnx Loaded graph with 35602 nodes and 65752 edges from "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-20 12:13:39,126 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-20 12:13:44,727 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-20 12:13:47,884 INFO osmnx Begin topologically simplifying the graph...
+2023-01-20 12:13:48,887 INFO osmnx Identified 7813 edge endpoints
+2023-01-20 12:13:51,721 INFO osmnx Simplified graph: 35602 to 7813 nodes, 65752 to 19559 edges
+2023-01-20 12:13:51,967 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-20 12:13:52,889 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-20 12:14:03,823 INFO osmnx Saved graph as GraphML file at "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-20 12:16:02,206 INFO osmnx Configured OSMnx
+2023-01-20 12:16:08,298 INFO osmnx Converting node and edge attribute data types
+2023-01-20 12:16:09,181 INFO osmnx Loaded graph with 35602 nodes and 65752 edges from "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-20 12:16:10,606 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-20 12:16:16,092 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-20 12:16:18,940 INFO osmnx Begin topologically simplifying the graph...
+2023-01-20 12:16:19,807 INFO osmnx Identified 7813 edge endpoints
+2023-01-20 12:16:22,355 INFO osmnx Simplified graph: 35602 to 7813 nodes, 65752 to 19559 edges
+2023-01-20 12:16:22,805 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-20 12:16:23,722 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-20 12:16:34,760 INFO osmnx Saved graph as GraphML file at "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-20 12:16:47,434 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-20 12:16:52,697 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-20 12:16:55,715 INFO osmnx Begin topologically simplifying the graph...
+2023-01-20 12:16:56,751 INFO osmnx Identified 7813 edge endpoints
+2023-01-20 12:16:59,256 INFO osmnx Simplified graph: 35602 to 7813 nodes, 65752 to 19559 edges
+2023-01-20 12:16:59,711 INFO osmnx Created nodes GeoDataFrame from graph
+2023-01-20 12:17:00,616 INFO osmnx Created edges GeoDataFrame from graph
+2023-01-20 12:17:11,193 INFO osmnx Saved graph as GraphML file at "../../bikenwgrowth_external/data/copenhagen/bikedata/G_carall_graphml.graphml"
+2023-01-21 02:53:13,661 INFO osmnx Created edges GeoDataFrame from graph

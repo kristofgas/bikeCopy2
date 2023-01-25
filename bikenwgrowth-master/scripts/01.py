@@ -1,5 +1,5 @@
 #debug = False
-
+print("hey")
 #exec(open("../parameters/parameters.py").read())
 #exec(open("../code/path.py").read())
 #exec(open("../code/setupCPH.py").read())
@@ -50,7 +50,7 @@ for placeid, placeinfo in tqdm(cities.items(), desc = "Cities"):
     # Compose special cases biketrack, bikeable, biketrackcarall
     parameterid = 'biketrack'
     Gs[parameterid] = nx.compose_all([Gs['bike_cyclewaylefttrack'], Gs['bike_cyclewaytrack'], Gs['bike_highwaycycleway'], Gs['bike_bicycleroad'], Gs['bike_cyclewayrighttrack'], Gs['bike_designatedpath'], Gs['bike_cyclestreet']])
-    ox_to_csv(Gs[parameterid], PATH["data"] + placeid+"_newdata" + "/", placeid, parameterid)
+    ox_to_csv(Gs[parameterid], PATH["data"] + placeid+ "/", placeid, parameterid)
     
     parameterid = 'bikeable'
     Gs[parameterid] = nx.compose_all([Gs['biketrack'], Gs['car30'], Gs['bike_livingstreet']]) 
@@ -222,17 +222,7 @@ result.to_csv("../../bikenwgrowth_external/data/copenhagen/copenhagen_carall_edg
 
 compress_file("../../bikenwgrowth_external/data/copenhagen/","copenhagen_carall_edges")
 
-result3 = result2.copy()
-for i in range(len(result3)):
-    num = result3['mean_group_bcount'].iloc[i]
-    #if num is NaN
-    if num != num:
-        result3['bcount_attr'].iloc[i]= bcount_attr_unassigned
-    if result3['bcount_attr']==0.0:
-        result3['bcount_attr'].iloc[i]= num *result3['length'].iloc[i]
-    else:
-        result3['bcount_attr'].iloc[i]= result3['bcount_attr'].iloc[i] *result3['length'].iloc[i]
-# ## Apply edge attribute after generalisation
+
 
 
 result2 = result

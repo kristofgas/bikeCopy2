@@ -31,11 +31,14 @@ if __name__ == '__main__':
     for poi_source, prune_measure in parsets_used:
         print(poi_source, prune_measure)
 
-        print("Running 03.py")
-        exec(open("03.py").read())
+        #print("Running 03.py")
+        #exec(open("03.py").read())
 
-        print("Running 04.py")
-        exec(open("04.py").read())
+        #print("Running 04a.py")
+        #exec(open("04a.py").read())
+
+        print("Running 04b.py")
+        exec(open("04b.py").read())
 
         #print("Running 05.py")
         #exec(open("05.py").read())
