@@ -19,7 +19,7 @@ if __name__ == '__main__':
     #print("Running 02.py")
     #exec(open("02.py").read())
 
-    poi_source_list = ["grid", "railwaystation"]
+    poi_source_list = ["grid"]
     prune_measure_list = ["betweenness"]
     parsets = list(itertools.product(poi_source_list, prune_measure_list))
 
@@ -34,11 +34,11 @@ if __name__ == '__main__':
         #print("Running 03.py")
         #exec(open("03.py").read())
 
-        #print("Running 04a.py")
-        #exec(open("04a.py").read())
+        print("Running 04a.py")
+        exec(open("04a.py").read())
 
-        print("Running 04b.py")
-        exec(open("04b.py").read())
+        #print("Running 04b.py")
+        #exec(open("04b.py").read())
 
         #print("Running 05.py")
         #exec(open("05.py").read())

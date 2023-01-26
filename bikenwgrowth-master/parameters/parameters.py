@@ -43,7 +43,7 @@ poiparameters = {"railwaystation":{'railway':['station','halt']}#, # should mayb
 
 # 04
 buffer_walk = 500 # Buffer in m for coverage calculations. (How far people are willing to walk)
-numnodepairs = 50 # Number of node pairs to consider for random sample to calculate directness (O(numnodepairs^2), so better not go over 1000)
+numnodepairs = 500 # Number of node pairs to consider for random sample to calculate directness (O(numnodepairs^2), so better not go over 1000)
 
 #05
 nodesize_grown = 7.5
@@ -81,7 +81,8 @@ plotparam_analysis = {
             "bikegrown_random": {"linewidth": 1.5, "color": '#222222', "linestyle": "dotted", "label": "Random"}
 			}
 
-constricted_parameternamemap = {"betweenness": "_metrics", "grid": "", "railwaystation": "_rail"}
+#constricted_parameternamemap = {"betweenness": "_metrics", "grid": "", "railwaystation": "_rail"}
+constricted_parameternamemap = {"betweenness": "_metrics", "grid": ""}
 constricted_plotinfo = {"title": ["Global Efficiency", "Local Efficiency", "Directness of LCC", "Spatial Clustering", "Anisotropy"]}
 analysis_existing_rowkeys = {"bikeable": 0, "bikeable_offstreet": 1, "biketrack": 2, "biketrack_onstreet": 3, "biketrackcarall": 4, "carall": 5}
 

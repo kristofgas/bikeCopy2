@@ -7,8 +7,8 @@ exec(open("../code/functions.py").read())
 
 if __name__ == '__main__':
 
-    print("Running 04maria.py")
-    exec(open("04maria.py").read())
+    print("Running 04b.py")
+    exec(open("04b.py").read())
 
   
 
