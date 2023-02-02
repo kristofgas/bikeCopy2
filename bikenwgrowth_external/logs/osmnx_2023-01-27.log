@@ -1,0 +1,74 @@
+2023-01-27 12:46:49,592 INFO osmnx Configured OSMnx
+2023-01-27 12:50:28,733 INFO osmnx Configured OSMnx
+2023-01-27 12:53:22,558 INFO osmnx Configured OSMnx
+2023-01-27 13:17:32,519 INFO osmnx Configured OSMnx
+2023-01-27 14:58:19,552 INFO osmnx Configured OSMnx
+2023-01-28 11:20:45,598 INFO osmnx Configured OSMnx
+2023-01-28 12:15:31,397 INFO osmnx Configured OSMnx
+2023-01-28 12:15:43,628 INFO osmnx Configured OSMnx
+2023-01-28 12:37:45,493 INFO osmnx Configured OSMnx
+2023-01-28 12:43:50,298 INFO osmnx Configured OSMnx
+2023-01-28 12:45:03,152 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:45:03,923 INFO osmnx Identified 2593 edge endpoints
+2023-01-28 12:45:05,188 INFO osmnx Simplified graph: 19501 to 2593 nodes, 39684 to 5868 edges
+2023-01-28 12:45:10,683 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:45:11,764 INFO osmnx Identified 7714 edge endpoints
+2023-01-28 12:45:14,427 INFO osmnx Simplified graph: 35660 to 7714 nodes, 78648 to 22756 edges
+2023-01-28 12:45:22,851 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:45:23,537 INFO osmnx Identified 3486 edge endpoints
+2023-01-28 12:45:24,920 INFO osmnx Simplified graph: 22201 to 3486 nodes, 45172 to 7742 edges
+2023-01-28 12:45:31,701 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:45:32,857 INFO osmnx Identified 9494 edge endpoints
+2023-01-28 12:45:36,497 INFO osmnx Simplified graph: 43917 to 9494 nodes, 97268 to 28422 edges
+2023-01-28 12:47:02,639 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:47:03,478 INFO osmnx Identified 2593 edge endpoints
+2023-01-28 12:47:04,667 INFO osmnx Simplified graph: 19501 to 2593 nodes, 39684 to 5868 edges
+2023-01-28 12:47:07,145 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:47:07,771 INFO osmnx Identified 7714 edge endpoints
+2023-01-28 12:47:10,823 INFO osmnx Simplified graph: 35660 to 7714 nodes, 78648 to 22756 edges
+2023-01-28 12:48:47,531 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:48:47,901 INFO osmnx Identified 3486 edge endpoints
+2023-01-28 12:48:49,296 INFO osmnx Simplified graph: 22201 to 3486 nodes, 45172 to 7742 edges
+2023-01-28 12:56:09,100 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:56:09,416 INFO osmnx Identified 2593 edge endpoints
+2023-01-28 12:56:10,591 INFO osmnx Simplified graph: 19501 to 2593 nodes, 39684 to 5868 edges
+2023-01-28 12:56:16,011 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:56:17,050 INFO osmnx Identified 7714 edge endpoints
+2023-01-28 12:56:20,100 INFO osmnx Simplified graph: 35660 to 7714 nodes, 78648 to 22756 edges
+2023-01-28 12:56:28,080 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:56:28,940 INFO osmnx Identified 3486 edge endpoints
+2023-01-28 12:56:30,306 INFO osmnx Simplified graph: 22201 to 3486 nodes, 45172 to 7742 edges
+2023-01-28 12:56:37,384 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:56:38,585 INFO osmnx Identified 9494 edge endpoints
+2023-01-28 12:56:42,225 INFO osmnx Simplified graph: 43917 to 9494 nodes, 97268 to 28422 edges
+2023-01-28 12:58:15,907 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:58:16,779 INFO osmnx Identified 2593 edge endpoints
+2023-01-28 12:58:18,044 INFO osmnx Simplified graph: 19501 to 2593 nodes, 39684 to 5868 edges
+2023-01-28 12:58:20,110 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 12:58:21,151 INFO osmnx Identified 7714 edge endpoints
+2023-01-28 12:58:24,234 INFO osmnx Simplified graph: 35660 to 7714 nodes, 78648 to 22756 edges
+2023-01-28 13:00:07,190 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 13:00:08,185 INFO osmnx Identified 3486 edge endpoints
+2023-01-28 13:00:09,596 INFO osmnx Simplified graph: 22201 to 3486 nodes, 45172 to 7742 edges
+2023-01-28 13:07:32,710 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 13:07:33,363 INFO osmnx Identified 2593 edge endpoints
+2023-01-28 13:07:34,551 INFO osmnx Simplified graph: 19501 to 2593 nodes, 39684 to 5868 edges
+2023-01-28 13:07:40,110 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 13:07:40,778 INFO osmnx Identified 7714 edge endpoints
+2023-01-28 13:07:43,882 INFO osmnx Simplified graph: 35660 to 7714 nodes, 78648 to 22756 edges
+2023-01-28 13:07:52,504 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 13:07:53,260 INFO osmnx Identified 3486 edge endpoints
+2023-01-28 13:07:54,653 INFO osmnx Simplified graph: 22201 to 3486 nodes, 45172 to 7742 edges
+2023-01-28 13:08:01,502 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 13:08:02,782 INFO osmnx Identified 9494 edge endpoints
+2023-01-28 13:08:06,466 INFO osmnx Simplified graph: 43917 to 9494 nodes, 97268 to 28422 edges
+2023-01-28 13:09:37,908 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 13:09:38,216 INFO osmnx Identified 2593 edge endpoints
+2023-01-28 13:09:39,964 INFO osmnx Simplified graph: 19501 to 2593 nodes, 39684 to 5868 edges
+2023-01-28 13:09:42,059 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 13:09:43,157 INFO osmnx Identified 7714 edge endpoints
+2023-01-28 13:09:45,774 INFO osmnx Simplified graph: 35660 to 7714 nodes, 78648 to 22756 edges
+2023-01-28 13:11:30,231 INFO osmnx Begin topologically simplifying the graph...
+2023-01-28 13:11:31,002 INFO osmnx Identified 3486 edge endpoints
+2023-01-28 13:11:32,386 INFO osmnx Simplified graph: 22201 to 3486 nodes, 45172 to 7742 edges
+2023-01-29 13:43:27,289 INFO osmnx Configured OSMnx

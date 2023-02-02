@@ -65,7 +65,11 @@ plotparam = {"bbox": (1280,1280),
 			}
 
 plotparam_analysis = {
-			"bikegrown": {"linewidth": 3.75, "color": '#0eb6d2', "linestyle": "solid", "label": "Grown network"},
+			"bikegrown": [{"linewidth": 1.5, "color": '#1f77b4', "linestyle": "solid", "label": "length"},
+                         {"linewidth": 1.5, "color": '#ff7f0e', "linestyle": "solid", "label": "length_attr"},
+                         {"linewidth": 1.5, "color": '#2ca02c', "linestyle": "solid", "label": "bcount_attr"},
+                         {"linewidth": 1.5, "color": '#d62728', "linestyle": "solid", "label": "pop_den_attr"},
+                         {"linewidth": 1.5, "color": '#9467bd', "linestyle": "solid", "label": "bcount_pop_den_attr"}],
 			"bikegrown_abstract": {"linewidth": 3.75, "color": '#000000', "linestyle": "solid", "label": "Grown network (unrouted)", "alpha": 0.75},
 			"mst": {"linewidth": 2, "color": '#0eb6d2', "linestyle": "dashed", "label": "MST"},
 			"mst_abstract": {"linewidth": 2, "color": '#000000', "linestyle": "dashed", "label": "MST (unrouted)", "alpha": 0.75},

@@ -488,14 +488,17 @@ def osm_to_ig(node, edge):
     edge_info = {}
     edge_info["weight"] = []
     edge_info["osmid"] = []
+    edge_info["length"] = []
     for i in range(len(edge)):
         edge_list.append([id_dict.get(edge['u'][i]), id_dict.get(edge['v'][i])])
         edge_info["weight"].append(round(edge['length'][i], 10))
+        edge_info["length"].append(round(edge['length'][i], 10))
         edge_info["osmid"].append(edge['osmid'][i])
 
     G.add_edges(edge_list) # attributes = edge_info doesn't work although it should: https://igraph.org/python/doc/igraph.Graph-class.html#add_edges
     for i in range(len(edge)):
         G.es[i]["weight"] = edge_info["weight"][i]
+        G.es[i]["length"] = edge_info["length"][i]
         G.es[i]["osmid"] = edge_info["osmid"][i]
 
     G.simplify(combine_edges=max)
@@ -523,14 +526,17 @@ def osm_to_ig_custom(node, edge, attrr):
     edge_info = {}
     edge_info["weight"] = []
     edge_info["osmid"] = []
+    edge_info["length"] = []
     for i in range(len(edge)):
         edge_list.append([id_dict.get(edge['u'][i]), id_dict.get(edge['v'][i])])
         edge_info["weight"].append(round(edge[attrr][i], 10))
+        edge_info["length"].append(round(edge['length'][i], 10))
         edge_info["osmid"].append(edge['osmid'][i])
 
     G.add_edges(edge_list) # attributes = edge_info doesn't work although it should: https://igraph.org/python/doc/igraph.Graph-class.html#add_edges
     for i in range(len(edge)):
         G.es[i]["weight"] = edge_info["weight"][i]
+        G.es[i]["length"] = edge_info["length"][i]
         G.es[i]["osmid"] = edge_info["osmid"][i]
 
     G.simplify(combine_edges=max)
@@ -855,6 +861,7 @@ def greedy_triangulation_routing_clusters(G, G_total, clusters, clusterinfo, pru
 
         GT = G_total.induced_subgraph(GT_indices)
         GTs.append(GT)
+        
     
     return(GTs, GT_abstracts)
 
@@ -1126,6 +1133,7 @@ def mst_routing(G, pois):
         MST_indices = MST_indices.union(sp)
 
     MST = G.induced_subgraph(MST_indices)
+    MST.es['weight'] = MST.es['length']
     
     return (MST, MST_abstract)
 
@@ -1198,8 +1206,9 @@ def greedy_triangulation_routing(G, pois, prune_quantiles = [1], prune_measure =
     G_temp = copy.deepcopy(G)
     for e in G_temp.es: # delete all edges
         G_temp.es.delete(e)
-        
+      
     poipairs = poipairs_by_distance(G, pois, True)
+    #print(poipairs)
     if len(poipairs) == 0: return ([], [])
 
     if prune_measure == "random":
@@ -1236,6 +1245,7 @@ def greedy_triangulation_routing(G, pois, prune_quantiles = [1], prune_measure =
             GT_indices = GT_indices.union(sp)
 
         GT = G.induced_subgraph(GT_indices)
+        GT.es['weight'] = GT.es['length']
         GTs.append(GT)
     
     return (GTs, GT_abstracts)
@@ -1258,13 +1268,15 @@ def poipairs_by_distance(G, pois, return_distances = False):
     for c, v in enumerate(indices):
         poi_nodes.append(G.get_shortest_paths(v, indices[c:], weights = "weight", output = "vpath"))
         poi_edges.append(G.get_shortest_paths(v, indices[c:], weights = "weight", output = "epath"))
-
+    
     # Sum up weights (distances) of all paths
     poi_dist = {}
     for paths_n, paths_e in zip(poi_nodes, poi_edges):
         for path_n, path_e in zip(paths_n, paths_e):
             # Sum up distances of path segments from first to last node
+            #
             path_dist = sum([G.es[e]['weight'] for e in path_e])
+            #path_dist = sum([G.es[e]['length'] for e in path_e])
             if path_dist > 0:
                 poi_dist[(path_n[0],path_n[-1])] = path_dist
             
@@ -1495,7 +1507,7 @@ def calculate_metrics(G, GT_abstract, G_big, nnids, calcmetrics = {"length":0,
           "overlap_biketrack": 0,
           "overlap_bikeable": 0,
           "efficiency_global": 0,
-          "efficiency_local": 0,
+          #"efficiency_local": 0,
           "directness_lcc_linkwise": 0,
           "directness_all_linkwise": 0
          }, buffer_walk = 500, numnodepairs = 500, verbose = False, return_cov = True, G_prev = ig.Graph(), cov_prev = Polygon(), ignore_GT_abstract = False, Gexisting = {}):
@@ -1789,9 +1801,9 @@ def calculate_metrics_additively(Gs, GT_abstracts, prune_quantiles, G_big, nnids
             "overlap_biketrack": [],
             "overlap_bikeable": [],
             "efficiency_global": [],
-            "efficiency_local": [],
+            #"efficiency_local": [],
             "efficiency_global_routed": [],
-            "efficiency_local_routed": [],
+            #"efficiency_local_routed": [],
             "directness_lcc_linkwise": [],
             "directness_all_linkwise": []        
             }):
@@ -1960,13 +1972,16 @@ def generate_video(placeid, imgname, vformat = "webm", duplicatelastframe = 5, v
     
     images = [img for img in os.listdir(PATH["plots_networks"] + placeid + "/") if img.startswith(placeid + imgname)]
     images.sort()
+  
     frame = cv2.imread(os.path.join(PATH["plots_networks"] + placeid + "/", images[0]))
     height, width, layers = frame.shape
-
+    
     if vformat == "webm":
         # https://stackoverflow.com/questions/49530857/python-opencv-video-format-play-in-browser
         fourcc = cv2.VideoWriter_fourcc(*'vp80')
+   
         video = cv2.VideoWriter(PATH["videos"] + placeid + "/" + placeid + imgname + '.webm', fourcc, 10, (width, height))
+
     elif vformat == "mp4":
         # https://www.pyimagesearch.com/2016/02/22/writing-to-video-with-opencv/#comment-390650
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -1974,12 +1989,45 @@ def generate_video(placeid, imgname, vformat = "webm", duplicatelastframe = 5, v
 
     for image in images:
         video.write(cv2.imread(os.path.join(PATH["plots_networks"] + placeid + "/", image)))
+        #print(os.path.join(PATH["plots_networks"] + placeid + "/", image))
     # Add the last frame duplicatelastframe more times:
     for i in range(0, duplicatelastframe):
         video.write(cv2.imread(os.path.join(PATH["plots_networks"] + placeid + "/", images[-1])))
+    video.release()
+    cv2.destroyAllWindows()
+   
+    if verbose:
+        print("Video " + placeid + imgname + '.' + vformat + ' generated from ' + str(len(images)) + " frames.")
+    
+
+def generate_video_custom(placeid, imgname, attr, vformat = "webm", duplicatelastframe = 5, verbose = True):
+    """Generate a video from a set of images using OpenCV
+    """
+    # Code adapted from: https://stackoverflow.com/questions/44947505/how-to-make-a-movie-out-of-images-in-python#44948030
+    
+    images = [img for img in os.listdir(PATH["plots_networks"] + placeid + "/"+attr+"/") if img.startswith(placeid + imgname)]
+    images.sort()
+    frame = cv2.imread(os.path.join(PATH["plots_networks"] + placeid + "/"+attr+"/", images[0]))
+    height, width, layers = frame.shape
+
+    if vformat == "webm":
+        # https://stackoverflow.com/questions/49530857/python-opencv-video-format-play-in-browser
+        fourcc = cv2.VideoWriter_fourcc(*'vp80')
+        video = cv2.VideoWriter(PATH["videos"] + placeid + "/"+attr+"/" + placeid + imgname + '.webm', fourcc, 10, (width, height))
+    elif vformat == "mp4":
+        # https://www.pyimagesearch.com/2016/02/22/writing-to-video-with-opencv/#comment-390650
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        video = cv2.VideoWriter(PATH["videos"] + placeid + "/"+attr+"/" + placeid + imgname + '.mp4', fourcc, 10, (width, height))
+
+    for image in images:
+        video.write(cv2.imread(os.path.join(PATH["plots_networks"] + placeid + "/"+attr+"/", image)))
+    # Add the last frame duplicatelastframe more times:
+    for i in range(0, duplicatelastframe):
+        video.write(cv2.imread(os.path.join(PATH["plots_networks"] + placeid + "/"+attr+"/", images[-1])))
 
     cv2.destroyAllWindows()
     video.release()
+    
     if verbose:
         print("Video " + placeid + imgname + '.' + vformat + ' generated from ' + str(len(images)) + " frames.")
 
